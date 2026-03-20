@@ -40,25 +40,21 @@ function cariKoin() {
             }
     }
 
-
+let sudahReload = false;
 setInterval(() => {
     const now = Date.now();
     const remaining = nextUpdate - now;
-    if (remaining <= 0) {
-      // Tampilkan pesan agar user tahu akan ada update
-      document.getElementById('timer-text').innerText = "Memperbarui data...";
-      
-      // Tunggu 5 detik (5000ms) baru reload
-      setTimeout(() => {
-          location.reload();
-      }, 5000);
-      
-      // Hentikan interval agar tidak memicu setTimeout berkali-kali
+    if (remaining <= 0 && !sudahReload) {
+    sudahReload = true; 
+    document.getElementById('timer-text').innerText = "Memperbarui data...";
+    setTimeout(() => {
+        location.reload();
+    }, 5000);     
       return; 
       }
-    
-    const seconds = Math.floor((remaining / 1000) % 60);
-    const minutes = Math.floor((remaining / (1000 * 60)) % 60);
+    const displayRemaining = Math.max(0, remaining);
+    const seconds = Math.floor((displayRemaining / 1000) % 60);
+    const minutes = Math.floor((displayRemaining / (1000 * 60)) % 60);
     document.getElementById('timer-text').innerText = `Next Data Update: ${minutes}m ${seconds}s`;
 }, 1000);
 
