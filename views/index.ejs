@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoinSurgeon</title>
+    <link rel="icon" type="image/png" href="/img/crypto.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!--Navigation Bar-->
+<div class="main nav">
+    <div class="search-section group">
+        <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><g><path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path></g></svg>
+        <input class="input" type="text" id="idInput" placeholder="Search Coin Name" onkeyup="cariKoin()">
+    </div>   
+    <h1 id="nama-koin" class="wave-text"><%= crypto.data[0].name %></h1>
+    <img id="gambar-koin" class="main_img" src="<%= crypto.data[0].image %>" alt="logo">
+</div>
+
+<div class="parent grid">
+<!--Main Statistics Basic-->
+    <div class="first">
+        <p>Symbol: <span id="simbol-koin"><%= crypto.data[0].symbol.toUpperCase() %></span></p>
+        <p>Rank: <span id="rank-koin">#<%= crypto.data[0].market_cap_rank %></span></p>
+        <p>Current Price: <span id="bold_dollar">$</span><span id="val-price"><%= crypto.data[0].current_price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumSignificantDigits: 15 }) %></span></p>
+        <p>High 24h: <span id="bold_dollar">$</span><span id="val-high"><%= crypto.data[0].high_24h.toLocaleString() %></span></p>        
+        <p>Low 24h: <span id="bold_dollar">$</span><span id="val-low"><%= crypto.data[0].low_24h.toLocaleString() %></span></p>
+        <p>Change 24h (USD): 
+            <span id="val-change-abs"><%= crypto.data[0].price_change_24h.toFixed(4) %></span> 
+            (<span id="val-change-percent"><%= crypto.data[0].price_change_percentage_24h.toFixed(2) %>%</span>)
+        </p>
+        <p>Market Cap: <span id="bold_dollar">$</span><span id="val-marketcap"><%= crypto.data[0].market_cap.toLocaleString() %></span></p>
+        <p>Volume (24h): <span id="bold_dollar">$</span><span id="val-volume"><%= crypto.data[0].total_volume.toLocaleString() %></span></p>
+        <p>Circulating Supply (Coin): <span id="val-circulating"><%= crypto.data[0].circulating_supply.toLocaleString() %></span></p>
+        <p>Total Supply (Coin): <span id="val-total-supply"><%= crypto.data[0].total_supply ? crypto.data[0].total_supply.toLocaleString() : 'N/A' %></span></p>
+        <p>Max Supply (Coin): <span id="val-max-supply"><%= crypto.data[0].max_supply ? crypto.data[0].max_supply.toLocaleString() : '∞' %></span></p>
+        <p>All Time High: <span id="bold_dollar">$</span><span id="val-ath"><%= crypto.data[0].ath.toLocaleString() %></span> 
+            (<span id="val-ath-percent"><%= crypto.data[0].ath_change_percentage.toFixed(2) %>%</span>)
+        </p>
+        <p>All Time Low: <span id="bold_dollar">$</span><span id="val-atl"><%= crypto.data[0].atl.toLocaleString() %></span> 
+            (<span id="val-atl-percent"><%= crypto.data[0].atl_change_percentage.toFixed(2) %>%</span>)
+        </p>
+        <p>Last Update: 
+            <span id="val-update">
+                <%= new Date(crypto.data[0].last_updated).toLocaleString('id-ID', { 
+                    dateStyle: 'medium', 
+                    timeStyle: 'medium' 
+                }).replace(/\./g, ':') %>
+            </span>
+        </p>
+    </div>
+    <!--Secound Crypto Rank-->
+    <div class="second" id="coin-container">
+        <p class="title_second">Coin Rank</p>
+        <div class="dropdown">
+        <button class="dropbtn">Sort & Filter</button>
+        <div class="dropdown-content">
+        <span class="header">Sort</span>
+        <a href="#" onclick="sortCoins('rank', 'asc')">Rank: Low to High</a>
+        <a href="#" onclick="sortCoins('rank', 'desc')">Rank: High to Low</a>
+        <a href="#" onclick="sortCoins('name', 'asc')">Name: A - Z</a>
+        <a href="#" onclick="sortCoins('name', 'desc')">Name: Z - A</a>
+        </div>
+        </div>
+        <ul id="coin-list">
+            <% coins.forEach(coin => { %>
+                <li class="coin-item" data-rank="<%= coin.market_cap_rank %>" data-name="<%= coin.name.toLowerCase() %>">
+                    <img src="<%= coin.image %>" alt="logo" class="image_sec" width="30"> 
+                    <strong>#<%= coin.market_cap_rank %></strong> - <%= coin.name %>
+                </li>
+            <% }); %>
+        </ul>
+    </div>
+
+    <!--thrid Crypto trend-->
+    <div class="third">
+        <p class="title_second">Trending</p>
+        <div class="dropdown">
+        <button class="dropbtn">Category</button>
+        <div class="dropdown-content">
+            <span class="header">Filter Category</span>
+            <a href="#" onclick="filterByType('coin')">Coin</a>
+            <a href="#" onclick="filterByType('nft')">NFTs</a>
+            <a href="#" onclick="filterByType('category')">Investment Narratives</a>
+        </div>
+        </div>
+
+        <div id="trend-container">
+            
+            <% crypto_trd.forEach(trend => { %>
+                <div class="trend-item" data-type="coin">
+                    <img src="<%= trend.item.thumb %>" alt="logo" width="50" display="inline"> 
+                    <p><%= trend.item.name %></p>
+                    <p>
+                    Price Change in 24H (USD): 
+                    <%= trend.item.data.price_change_percentage_24h.usd.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) %>
+                    </p>
+                </div>
+            <% }) %>
+
+            <% nft.forEach(trend => { %>
+                <div class="trend-item" data-type="nft">
+                    <img src="<%= trend.thumb %>" alt="logo" width="50"> 
+                    <p>Nama: <%= trend.name %></p>
+                    <strong>24 hours sell price: <%= trend.data.h24_volume%></strong>
+                </div>
+            <% }) %>
+
+            <% category.forEach(trend => { %>
+                <div class="trend-item" data-type="category">
+                    <p style="margin:0.5rem">Nama: <%= trend.name %></p>
+                     <strong style="margin:0.5rem">Market Cap 1h Change: <%= trend.market_cap_1h_change.toFixed(2) %>%</strong><br><br>
+                    <a style="margin:0.5rem" href="https://www.coingecko.com/en/categories/<%= trend.slug %>">Lihat Detail</a>    
+                   
+                </div>
+            <% }) %>
+
+        
+        </div>
+            
+</div>
+
+<!--Hover Info-->
+<div id="loader-container">
+  <div class="loader" id="myLoader"></div>
+  
+  <div class="timer-wrapper">
+    <p id="timer-text" style="margin: 0;">Memperbarui: --:--</p>
+    
+    <div class="info-trigger">i</div>
+    
+    <div class="hover-card">
+      <strong>Update Info</strong><br>
+      All the above data is automatically updated every 5 minutes following real-time price movements on the exchange. Using the CoinGecko API demo.
+    </div>
+  </div>
+</div>
+    
+
+<script>
+// taking data for search coin function
+    const daftarKoin = JSON.parse('<%- JSON.stringify(crypto.data) %>');
+    const nextUpdate = parseInt('<%= nextUpdate %>');
+
+//shorting the rank
+function sortCoins(criteria, direction) {
+    const list = document.getElementById('coin-list');
+    const items = Array.from(list.getElementsByClassName('coin-item'));
+
+    items.sort((a, b) => {
+        let valA = a.getAttribute(`data-${criteria}`);
+        let valB = b.getAttribute(`data-${criteria}`);
+        if (criteria === 'rank') {
+            valA = parseInt(valA);
+            valB = parseInt(valB);
+            return direction === 'asc' ? valA - valB : valB - valA;
+        }
+        if (direction === 'asc') {
+            return valA.localeCompare(valB);
+        } else {
+            return valB.localeCompare(valA); 
+        }
+    });
+
+    items.forEach(item => list.appendChild(item));
+    }
+
+window.onload = function() {
+    filterByType('coin'); 
+};
+
+function filterByType(type){
+    const items = document.querySelectorAll('.trend-item');
+    items.forEach(item =>{
+    const itemType = item.getAttribute('data-type');
+    if (itemType === type){
+        item.style.display = 'block';
+    }else{
+        item.style.display = 'none';
+    }
+
+    })
+}
+
+
+</script>
+<script src="/js/script.js"></script>
+</body>
+</html>
