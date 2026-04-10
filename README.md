@@ -46,30 +46,4 @@ This project goes beyond standard API fetching by implementing an efficient **Ba
 2.  **Local JSON Caching:** The fetched API data is formatted into a payload (appended with a timestamp) and saved locally into `raw_price.json` and `trending.json` using `fs.writeFileSync`.
 3.  **Fast Server-Side Rendering (SSR):** When a user accesses the main route (`/`), the server simply reads the existing local JSON files (`fs.readFileSync`) and passes that data directly to the EJS template. This drastically reduces server response time and minimizes API bandwidth usage.
 
----
 
-## 💻 Local Installation & Setup
-
-If you want to run this project on your local machine:
-
-1. **Clone this repository:**
-   ```bash
-   git clone [https://github.com/Rahelxv/crypto-dashboard-api-js.git](https://github.com/Rahelxv/crypto-dashboard-api-js.git)
-   cd crypto-dashboard-api-js
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-3. **Setup Environment Variables:**
-    ```bash
-    PORT=3000
-    COINGECKO_API_KEY=your_api_key_here
-4. **Prepare the Cache Directory**
-    ```bash
-    mkdir data
-5. Run the application
-    ```bash
-   npm start
-6. Access the app
-     ```bash
-    http://localhost:3000
